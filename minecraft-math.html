@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Minecraft Multiplication Trainer</title>
+<style>
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    background-color: #87CEEB;
+    margin: 0;
+    padding: 20px;
+}
+
+.game-box {
+    background: #8B4513;
+    color: white;
+    padding: 20px;
+    border-radius: 10px;
+    max-width: 400px;
+    margin: auto;
+    box-shadow: 5px 5px 0px #5A2E0C;
+}
+
+h1 {
+    font-size: 22px;
+}
+
+.question {
+  font-size: 26px;
+  margin: 20px 0;
+  min-height: 32px;
+}
+
+input {
+    font-size: 20px;
+    padding: 5px;
+    width: 100px;
+    text-align: center;
+}
+
+button {
+    font-size: 18px;
+    padding: 8px 15px;
+    margin: 10px;
+    border: none;
+    border-radius: 5px;
+    background-color: #4CAF50;
+    color: white;
+}
+
+.badge {
+    margin-top: 10px;
+    font-size: 18px;
+}
+
+.report {
+    text-align: left;
+    margin-top: 15px;
+    font-size: 14px;
+}
+</style>
+</head>
+<body>
+
+<div class="game-box">
+    <h1>⛏️ Minecraft Multiplication Trainer</h1>
+    <div id="gameArea">
+        <div class="question" id="question"></div>
+        <input type="number" id="answer" />
+        <br>
+        <button onclick="checkAnswer()">Submit</button>
+        <button onclick="startGame()">Restart</button>
+        <div class="badge" id="badge"></div>
+        <div class="report" id="report"></div>
+    </div>
+</div>
+
+<script>
+let num1, num2;
+let correctCount = 0;
+let totalQuestions = 0;
+let sessionLog = [];
+
+function generateQuestion() {
+    num1 = Math.floor(Math.random() * 10) + 1;
+    num2 = Math.floor(Math.random() * 10) + 1;
+    document.getElementById("question").textContent =
+  "What is " + num1 + " × " + num2 + "?";
+    document.getElementById("answer").value = "";
+}
+
+function checkAnswer() {
+    let userAnswer = parseInt(document.getElementById("answer").value);
+    let correctAnswer = num1 * num2;
+    totalQuestions++;
+
+    if (userAnswer === correctAnswer) {
+        correctCount++;
+        sessionLog.push(num1 + "×" + num2 + " = " + userAnswer + " ✅");
+    } else {
+        sessionLog.push(num1 + "×" + num2 + " = " + userAnswer + 
+        " ❌ (Correct: " + correctAnswer + ")");
+    }
+
+    updateBadge();
+    updateReport();
+    generateQuestion();
+}
+
+function updateBadge() {
+    let badgeText = "";
+
+    if (correctCount >= 15) {
+        badgeText = "🏆 Diamond Master!";
+    } else if (correctCount >= 10) {
+        badgeText = "💎 Diamond Pickaxe Earned!";
+    } else if (correctCount >= 5) {
+        badgeText = "🪓 Iron Miner Badge!";
+    } else if (correctCount >= 3) {
+        badgeText = "🌱 Wood Harvester!";
+    }
+
+    document.getElementById("badge").innerText = badgeText;
+}
+
+function updateReport() {
+    let reportHTML = "<strong>Session Report:</strong><br>";
+    reportHTML += "Correct: " + correctCount + 
+                  " / " + totalQuestions + "<br><br>";
+    reportHTML += sessionLog.slice(-10).join("<br>");
+    document.getElementById("report").innerHTML = reportHTML;
+}
+
+function startGame() {
+    correctCount = 0;
+    totalQuestions = 0;
+    sessionLog = [];
+    document.getElementById("badge").innerText = "";
+    document.getElementById("report").innerHTML = "";
+    generateQuestion();
+}
+
+startGame();
+</script>
+
+</body>
+</html>
