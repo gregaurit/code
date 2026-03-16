@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Minecraft Math Trainer</title>
+  <link rel="apple-touch-icon" href="icon.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Minecraft Math">
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(to bottom, #87ceeb 0%, #87ceeb 45%, #7cfc00 45%, #5f9c32 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 16px;
+      box-sizing: border-box;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 430px;
+      background: #3b2f2f;
+      color: white;
+      border: 4px solid #2a1f1f;
+      border-radius: 16px;
+      box-shadow: 0 8px 0 #241919;
+      overflow: hidden;
+    }
+
+    .header {
+      background: #4caf50;
+      padding: 16px;
+      text-align: center;
+      border-bottom: 4px solid #2e7d32;
+    }
+
+    .header h1 {
+      margin: 0;
+      font-size: 1.6rem;
+    }
+
+    .header p {
+      margin: 8px 0 0;
+      font-size: 0.95rem;
+    }
+
+    .content {
+      padding: 20px;
+    }
+
+    .stats {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+    }
+
+    .stat-box {
+      flex: 1 1 30%;
+      background: #5d4037;
+      padding: 10px;
+      border-radius: 10px;
+      text-align: center;
+      font-size: 0.95rem;
+    }
+
+    .question-box {
+      background: #6d4c41;
+      border-radius: 12px;
+      padding: 18px;
+      text-align: center;
+      margin-bottom: 16px;
+    }
+
+    .question-label {
+      font-size: 0.95rem;
+      opacity: 0.9;
+      margin-bottom: 8px;
+    }
+
+    .question {
+      font-size: 2rem;
+      font-weight: bold;
+      min-height: 48px;
+    }
+
+    .answer-row {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    input[type="number"] {
+      flex: 1;
+      font-size: 1.2rem;
+      padding: 14px;
+      border-radius: 10px;
+      border: none;
+      box-sizing: border-box;
+    }
+
+    button {
+      border: none;
+      border-radius: 10px;
+      padding: 14px 16px;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .submit-btn {
+      background: #ffca28;
+      color: #222;
+      width: 100%;
+      margin-bottom: 10px;
+    }
+
+    .next-btn {
+      background: #29b6f6;
+      color: white;
+      width: 100%;
+      margin-bottom: 10px;
+      display: none;
+    }
+
+    .restart-btn {
+      background: #ab47bc;
+      color: white;
+      width: 100%;
+    }
+
+    .feedback {
+      min-height: 28px;
+      text-align: center;
+      font-size: 1rem;
+      margin: 10px 0 14px;
+      font-weight: bold;
+    }
+
+    .badge-box, .report-box {
+      background: #5d4037;
+      border-radius: 12px;
+      padding: 14px;
+      margin-top: 14px;
+    }
+
+    .badge-title, .report-title {
+      font-weight: bold;
+      margin-bottom: 8px;
+      font-size: 1rem;
+    }
+
+    .report-list {
+      font-size: 0.92rem;
+      line-height: 1.4;
+      max-height: 220px;
+      overflow-y: auto;
+    }
+
+    .small-note {
+      font-size: 0.85rem;
+      opacity: 0.9;
+      margin-top: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="header">
+      <h1>⛏️ Minecraft Math Trainer</h1>
+      <p>Practice multiplication and division facts!</p>
+    </div>
+
+    <div class="content">
+      <div class="stats">
+        <div class="stat-box">✅ Correct<br><span id="correctCount">0</span></div>
+        <div class="stat-box">🧮 Total<br><span id="totalCount">0</span></div>
+        <div class="stat-box">⭐ XP<br><span id="xpCount">0</span></div>
+      </div>
+
+      <div class="question-box">
+        <div class="question-label">Solve this problem:</div>
+        <div class="question" id="question">Loading...</div>
+      </div>
+
+      <div class="answer-row">
+        <input type="number" id="answerInput" inputmode="numeric" />
+      </div>
+
+      <button class="submit-btn" id="submitBtn">Submit Answer</button>
+      <button class="next-btn" id="nextBtn">Next Question</button>
+      <button class="restart-btn" id="restartBtn">Restart Session</button>
+
+      <div class="feedback" id="feedback"></div>
+
+      <div class="badge-box">
+        <div class="badge-title">🏅 Badges</div>
+        <div id="badges">No badges yet. Keep mining math facts!</div>
+        <div class="small-note">Earn badges by answering correctly.</div>
+      </div>
+
+      <div class="report-box">
+        <div class="report-title">📋 Session Report</div>
+        <div id="report" class="report-list">No questions answered yet.</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let currentQuestion = null;
+    let correct = 0;
+    let total = 0;
+    let xp = 0;
+    let sessionLog = [];
+
+    const questionEl = document.getElementById("question");
+    const answerInput = document.getElementById("answerInput");
+    const feedbackEl = document.getElementById("feedback");
+    const correctCountEl = document.getElementById("correctCount");
+    const totalCountEl = document.getElementById("totalCount");
+    const xpCountEl = document.getElementById("xpCount");
+    const badgesEl = document.getElementById("badges");
+    const reportEl = document.getElementById("report");
+    const submitBtn = document.getElementById("submitBtn");
+    const nextBtn = document.getElementById("nextBtn");
+    const restartBtn = document.getElementById("restartBtn");
+
+    function generateQuestion() {
+      const type = Math.random() < 0.5 ? "multiplication" : "division";
+
+      if (type === "multiplication") {
+        const a = randomInt(1, 10);
+        const b = randomInt(1, 10);
+        currentQuestion = {
+          type,
+          prompt: `${a} × ${b}`,
+          answer: a * b,
+          factFamily: `${a}×${b}`
+        };
+      } else {
+        const divisor = randomInt(1, 10);
+        const quotient = randomInt(1, 10);
+        const dividend = divisor * quotient;
+        currentQuestion = {
+          type,
+          prompt: `${dividend} ÷ ${divisor}`,
+          answer: quotient,
+          factFamily: `${dividend}÷${divisor}`
+        };
+      }
+
+      questionEl.textContent = currentQuestion.prompt;
+      answerInput.value = "";
+      answerInput.disabled = false;
+      answerInput.focus();
+      feedbackEl.textContent = "";
+      submitBtn.style.display = "block";
+      nextBtn.style.display = "none";
+    }
+
+    function randomInt(min, max) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    function submitAnswer() {
+      const raw = answerInput.value.trim();
+      if (raw === "") {
+        feedbackEl.textContent = "Please enter an answer.";
+        return;
+      }
+
+      const userAnswer = Number(raw);
+      total++;
+
+      const isCorrect = userAnswer === currentQuestion.answer;
+
+      if (isCorrect) {
+        correct++;
+        xp += 10;
+        feedbackEl.textContent = "✅ Correct! Nice job, miner.";
+      } else {
+        feedbackEl.textContent = `❌ Not quite. The correct answer is ${currentQuestion.answer}.`;
+      }
+
+      sessionLog.unshift({
+        prompt: currentQuestion.prompt,
+        userAnswer,
+        correctAnswer: currentQuestion.answer,
+        isCorrect
+      });
+
+      updateStats();
+      updateBadges();
+      updateReport();
+
+      answerInput.disabled = true;
+      submitBtn.style.display = "none";
+      nextBtn.style.display = "block";
+    }
+
+    function updateStats() {
+      correctCountEl.textContent = correct;
+      totalCountEl.textContent = total;
+      xpCountEl.textContent = xp;
+    }
+
+    function updateBadges() {
+      const earned = [];
+
+      if (correct >= 3) earned.push("🪵 Wood Gatherer");
+      if (correct >= 5) earned.push("⛏️ Stone Miner");
+      if (correct >= 10) earned.push("🧱 Iron Builder");
+      if (correct >= 15) earned.push("💎 Diamond Explorer");
+      if (correct >= 20) earned.push("👑 Mathcraft Master");
+
+      badgesEl.innerHTML = earned.length ? earned.join("<br>") : "No badges yet. Keep mining math facts!";
+    }
+
+    function updateReport() {
+      if (sessionLog.length === 0) {
+        reportEl.textContent = "No questions answered yet.";
+        return;
+      }
+
+      reportEl.innerHTML = sessionLog
+        .slice(0, 12)
+        .map(item => {
+          return item.isCorrect
+            ? `✅ ${item.prompt} = ${item.userAnswer}`
+            : `❌ ${item.prompt} = ${item.userAnswer} (correct: ${item.correctAnswer})`;
+        })
+        .join("<br>");
+    }
+
+    function restartSession() {
+      correct = 0;
+      total = 0;
+      xp = 0;
+      sessionLog = [];
+      updateStats();
+      updateBadges();
+      updateReport();
+      generateQuestion();
+    }
+
+    submitBtn.addEventListener("click", submitAnswer);
+    nextBtn.addEventListener("click", generateQuestion);
+    restartBtn.addEventListener("click", restartSession);
+
+    answerInput.addEventListener("keydown", function(event) {
+      if (event.key === "Enter") {
+        if (submitBtn.style.display !== "none") {
+          submitAnswer();
+        } else {
+          generateQuestion();
+        }
+      }
+    });
+
+    generateQuestion();
+  </script>
+</body>
+</html>
