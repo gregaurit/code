@@ -32,26 +32,28 @@
       overflow: hidden;
     }
 
-    .header {
-      background: #4caf50;
-      padding: 16px;
-      text-align: center;
-      border-bottom: 4px solid #2e7d32;
-    }
+    .header-row{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:12px;
+}
 
-    .header h1 {
-      margin: 0;
-      font-size: 1.6rem;
-    }
+.character{
+  width:70px;
+  height:auto;
+  border-radius:8px;
+}
 
-    .header p {
-      margin: 8px 0 0;
-      font-size: 0.95rem;
-    }
+.header-text h1{
+  margin:0;
+  font-size:1.3rem;
+}
 
-    .content {
-      padding: 20px;
-    }
+.header-text p{
+  margin:4px 0 0 0;
+  font-size:.85rem;
+}
 
     .stats {
       display: flex;
@@ -174,11 +176,14 @@
 
 <div class="header">
 
-<img src="character.png" 
-style="width:120px;border-radius:10px;margin-bottom:8px;">
-
-<h1>⛏️ Minecraft Math Trainer</h1>
-<p>Practice multiplication and division facts with Sirena!</p>
+  <div class="header-row">
+    <img src="character.png" class="character">
+    
+    <div class="header-text">
+      <h1>⛏️ Minecraft Math Trainer</h1>
+      <p>Practice multiplication & division!</p>
+    </div>
+  </div>
 
 </div>
 
